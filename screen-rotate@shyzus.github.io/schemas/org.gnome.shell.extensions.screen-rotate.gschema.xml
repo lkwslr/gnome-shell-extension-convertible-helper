@@ -61,6 +61,10 @@
       <default>false</default>
       <description>Enable the use of the On-Screen-Keyboard for the landscape (flipped) orientation.</description>
     </key>
+    <key type="b" name="sw-tablet-mode">
+      <default>false</default>
+      <description>Invert horizontal rotation direction of the screen</description>
+    </key>
     <key type="b" name="debug-logging">
       <default>false</default>
       <description>Toggle debug logging.</description>

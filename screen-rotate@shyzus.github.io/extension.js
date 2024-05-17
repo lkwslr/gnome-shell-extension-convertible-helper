@@ -299,6 +299,39 @@ class ScreenAutorotate {
     }
   }
 
+  _handle_mode(target) {
+    if (this._settings.get_boolean('sw-tablet-mode')) {
+      switch (target) {
+        case 0:
+          try {
+            const proc = Gio.Subprocess.new(
+                ['bash', '-c', laptop_mode],
+                Gio.SubprocessFlags.NONE
+            );
+            SW_TABLET_MODE = false;
+          } catch (e) {
+            logError(e);
+          }
+          break;
+        case 1:
+        case 2:
+        case 3:
+          try {
+            if (!SW_TABLET_MODE) {
+              const proc = Gio.Subprocess.new(
+                  ['bash', '-c', tablet_mode],
+                  Gio.SubprocessFlags.NONE
+              );
+              SW_TABLET_MODE = true;
+            }
+          } catch (e) {
+            logError(e);
+          }
+          break;
+      }
+    }
+  }
+
   rotate_to(orientation) {
     const sensor = Orientation[orientation];
     const invert_horizontal_direction = this._settings.get_boolean('invert-horizontal-rotation-direction');
@@ -309,66 +342,24 @@ class ScreenAutorotate {
     switch (sensor) {
       case 0:
         // sensor reports landscape
-        try {
-            const proc = Gio.Subprocess.new(
-                    ['bash', '-c', laptop_mode],
-                    Gio.SubprocessFlags.NONE
-                );
-                SW_TABLET_MODE = false;
-        } catch (e) {
-          logError(e);
-        }
         if (invert_horizontal_direction) {
           target = 2;
         }
         break;
       case 1:
         // sensor reports portrait
-        try {
-            if (!SW_TABLET_MODE) {
-                const proc = Gio.Subprocess.new(
-                    ['bash', '-c', tablet_mode],
-                    Gio.SubprocessFlags.NONE
-                );
-                SW_TABLET_MODE = true;
-            }
-        } catch (e) {
-          logError(e);
-        }
         if (invert_vertical_direction) {
           target = 3;
         }
         break;
       case 2:
         // sensor reports landscape-inverted
-        try {
-            if (!SW_TABLET_MODE) {
-                const proc = Gio.Subprocess.new(
-                    ['bash', '-c', tablet_mode],
-                    Gio.SubprocessFlags.NONE
-                );
-                SW_TABLET_MODE = true;
-            }
-        } catch (e) {
-          logError(e);
-        }
         if (invert_horizontal_direction) {
           target = 0;
         }
         break;
       case 3:
         // sensor reports portrait-inverted
-        try {
-            if (!SW_TABLET_MODE) {
-                const proc = Gio.Subprocess.new(
-                    ['bash', '-c', tablet_mode],
-                    Gio.SubprocessFlags.NONE
-                );
-                SW_TABLET_MODE = true;
-            }
-        } catch (e) {
-          logError(e);
-        }
         if (invert_vertical_direction) {
           target = 1;
         }
@@ -384,6 +375,7 @@ class ScreenAutorotate {
     }
     Rotator.rotate_to(target);
     this._handle_osk(target);
+    this._handle_mode(target);
   }
 }
 

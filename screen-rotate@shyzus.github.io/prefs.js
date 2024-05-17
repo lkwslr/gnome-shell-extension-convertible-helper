@@ -41,6 +41,10 @@ export default class MyExtensionPreferences extends ExtensionPreferences {
     oskSettingsGroup.set_title('On-Screen-Keyboard Settings');
     page.add(oskSettingsGroup);
 
+    const tabletGroup = new Adw.PreferencesGroup();
+    tabletGroup.set_title('Tablet Mode Behaviour');
+    page.add(tabletGroup);
+
     const debugGroup = new Adw.PreferencesGroup();
     debugGroup.set_title('Debug Settings');
     page.add(debugGroup);
@@ -101,6 +105,12 @@ export default class MyExtensionPreferences extends ExtensionPreferences {
     });
     oskSettingsGroup.add(landscapeFlippedOskRow);
 
+    const toggleModeRow = new Adw.ActionRow({
+      title: 'Run SW_TABLET_MODE Toggle',
+      subtitle: 'Emulates functions of SW_TABLET_MODE, which is "pressed" when detaching the keyboard or turning the screen more than 180°.'
+    });
+    tabletGroup.add(toggleModeRow);
+
     const toggleLoggingRow = new Adw.ActionRow({
       title: 'Enable debug logging',
       subtitle: 'Use "journalctl /usr/bin/gnome-shell -f" to see log output.'
@@ -155,6 +165,11 @@ export default class MyExtensionPreferences extends ExtensionPreferences {
       valign: Gtk.Align.CENTER
     });
 
+    const tabletSwitch = new Gtk.Switch({
+      active: window._settings.get_boolean('sw-tablet-mode'),
+      valign: Gtk.Align.CENTER,
+    });
+
     const toggleLoggingSwitch = new Gtk.Switch({
       active: window._settings.get_boolean('debug-logging'),
       valign: Gtk.Align.CENTER
@@ -190,6 +205,9 @@ export default class MyExtensionPreferences extends ExtensionPreferences {
     window._settings.bind('landscape-flipped-osk',
       landscapeFlippedOskCheckButton, 'active', Gio.SettingsBindFlags.DEFAULT);
 
+    window._settings.bind('sw-tablet-mode',
+        tabletSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
+
     window._settings.bind('debug-logging',
       toggleLoggingSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
 
@@ -222,6 +240,9 @@ export default class MyExtensionPreferences extends ExtensionPreferences {
 
     landscapeFlippedOskRow.add_suffix(landscapeFlippedOskCheckButton);
     landscapeFlippedOskRow.activatable_widget = landscapeFlippedOskCheckButton;
+
+    toggleModeRow.add_suffix(tabletSwitch);
+    toggleModeRow.activatable_widget = tabletSwitch;
 
     toggleLoggingRow.add_suffix(toggleLoggingSwitch);
     toggleLoggingRow.activatable_widget = toggleLoggingSwitch;
