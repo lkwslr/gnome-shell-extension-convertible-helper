@@ -38,7 +38,7 @@ sudo killall evtest
 sudo evemu-event /dev/input/event17 --type 5 --code 1 --value 0 --sync
 `;
 
-const talet_mode = `
+const tablet_mode = `
 sudo evemu-event /dev/input/event17 --type 5 --code 1 --value 1 --sync
 sudo evtest --grab /dev/input/event4
 `;
