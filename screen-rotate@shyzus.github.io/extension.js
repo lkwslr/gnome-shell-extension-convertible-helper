@@ -33,6 +33,17 @@ const ORIENTATION_LOCK_KEY = 'orientation-lock';
 const A11Y_APPLICATIONS_SCHEMA = 'org.gnome.desktop.a11y.applications';
 const SHOW_KEYBOARD = 'screen-keyboard-enabled';
 
+const laptop_mode = `
+sudo killall evtest
+sudo evemu-event /dev/input/event17 --type 5 --code 1 --value 0 --sync
+`;
+
+const talet_mode = `
+sudo evemu-event /dev/input/event17 --type 5 --code 1 --value 1 --sync
+sudo evtest --grab /dev/input/event4
+`;
+
+
 // Orientation names must match those provided by net.hadess.SensorProxy
 const Orientation = Object.freeze({
   'normal': 0,
@@ -40,6 +51,8 @@ const Orientation = Object.freeze({
   'bottom-up': 2,
   'right-up': 3
 });
+
+let SW_TABLET_MODE = false;
 
 const ManualOrientationIndicator = GObject.registerClass(
 class ManualOrientationIndicator extends SystemIndicator {
@@ -296,24 +309,66 @@ class ScreenAutorotate {
     switch (sensor) {
       case 0:
         // sensor reports landscape
+        try {
+            const proc = Gio.Subprocess.new(
+                    ['bash', '-c', laptop_mode],
+                    Gio.SubprocessFlags.NONE
+                );
+                SW_TABLET_MODE = false;
+        } catch (e) {
+          logError(e);
+        }
         if (invert_horizontal_direction) {
           target = 2;
         }
         break;
       case 1:
         // sensor reports portrait
+        try {
+            if (!SW_TABLET_MODE) {
+                const proc = Gio.Subprocess.new(
+                    ['bash', '-c', tablet_mode],
+                    Gio.SubprocessFlags.NONE
+                );
+                SW_TABLET_MODE = true;
+            }
+        } catch (e) {
+          logError(e);
+        }
         if (invert_vertical_direction) {
           target = 3;
         }
         break;
       case 2:
         // sensor reports landscape-inverted
+        try {
+            if (!SW_TABLET_MODE) {
+                const proc = Gio.Subprocess.new(
+                    ['bash', '-c', tablet_mode],
+                    Gio.SubprocessFlags.NONE
+                );
+                SW_TABLET_MODE = true;
+            }
+        } catch (e) {
+          logError(e);
+        }
         if (invert_horizontal_direction) {
           target = 0;
         }
         break;
       case 3:
         // sensor reports portrait-inverted
+        try {
+            if (!SW_TABLET_MODE) {
+                const proc = Gio.Subprocess.new(
+                    ['bash', '-c', tablet_mode],
+                    Gio.SubprocessFlags.NONE
+                );
+                SW_TABLET_MODE = true;
+            }
+        } catch (e) {
+          logError(e);
+        }
         if (invert_vertical_direction) {
           target = 1;
         }
@@ -322,6 +377,7 @@ class ScreenAutorotate {
 
     target = (target + offset) % 4;
     if (this._settings.get_boolean('debug-logging')) {
+      console.log(`SW=${SW_TABLET_MODE}`);
       console.log(`sensor=${Orientation[orientation]}`);
       console.log(`offset=${offset}`);
       console.log(`target=${target}`);

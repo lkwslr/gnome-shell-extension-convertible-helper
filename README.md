@@ -4,11 +4,15 @@ A GNOME extension to enable screen rotation regardless of touch mode.
 
 This extension uses Mutter's D-Bus API, so it works on both X11 and Wayland.
 
+When rotated the SW_TABLET_MODE event is triggered and the keyboard gets "disabled" via evtest --grab .
+This approach is hacky, but it works...
+You may need to modify the keyboard event and allow the commands to be run without typing in a sudo password.
+
 ## License
 Original project was licensed under GPL V2. With the inactivity of the current 
 maintainer kosmospredanie. This fork has been upgraded to GPL V3.
 
-Copyright (C) 2024  kosmospredanie, shyzus, Shinigaminai, efosmark, BlackDuck888
+Copyright (C) 2024  kosmospredanie, shyzus, Shinigaminai, efosmark, BlackDuck888, lkwslr
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,22 +28,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
     
 ## History
-This is a fork of an [existing repository](https://github.com/kosmospredanie/gnome-shell-extension-screen-autorotate) owned by [@kosmospredanie](https://github.com/kosmospredanie). Due to a long period of inactivity this fork was created see this [issue](https://github.com/kosmospredanie/gnome-shell-extension-screen-autorotate/issues/10) for more details.
+This is a fork of an [existing repository](https://github.com/shyzus/gnome-shell-extension-screen-autorotate) owned by [@shyzus](https://github.com/shyzus).
 
 ## Requirements
 
 - iio-sensor-proxy
+- evtest
+- evemu-event
 
 ## Install
-
-### From extensions.gnome.org
-
-[GNOME Shell Extensions](https://extensions.gnome.org/extension/5389/screen-rotate/)
 
 ### From git
 
 ```
-git clone https://github.com/shyzus/gnome-shell-extension-screen-autorotate.git
+git clone https://github.com/lkwslr/gnome-shell-extension-screen-autorotate.git
 cd gnome-shell-extension-screen-autorotate
 cp -r screen-rotate@shyzus.github.io ~/.local/share/gnome-shell/extensions
 ```
