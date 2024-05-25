@@ -35,12 +35,12 @@ const SHOW_KEYBOARD = 'screen-keyboard-enabled';
 
 const laptop_mode = `
 sudo killall evtest
-sudo evemu-event /dev/input/event17 --type 5 --code 1 --value 0 --sync
+sudo evemu-event /dev/input/by-path/platform-thinkpad_acpi-event --type 5 --code 1 --value 0 --sync
 `;
 
 const tablet_mode = `
-sudo evemu-event /dev/input/event17 --type 5 --code 1 --value 1 --sync
-sudo evtest --grab /dev/input/event4
+sudo evemu-event /dev/input/by-path/platform-thinkpad_acpi-event --type 5 --code 1 --value 1 --sync
+sudo evtest --grab /dev/input/by-path/platform-i8042-serio-0-event-kbd
 `;
 
 
