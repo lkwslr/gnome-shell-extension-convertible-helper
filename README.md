@@ -34,7 +34,7 @@ This is a fork of an [existing repository](https://github.com/shyzus/gnome-shell
 
 - iio-sensor-proxy
 - evtest
-- evemu-event
+- evemu
 
 ## Install
 
