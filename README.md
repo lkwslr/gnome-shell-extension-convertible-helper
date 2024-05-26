@@ -38,6 +38,8 @@ This is a fork of an [existing repository](https://github.com/shyzus/gnome-shell
 
 ## Install
 
+If you don't use a Lenovo Thinkpad, you have to adjust the input device paths to your needs.
+
 ### From git
 
 ```
