@@ -1,0 +1,4 @@
+USERNAME ALL= NOPASSWD: /usr/bin/killall evtest
+USERNAME ALL= NOPASSWD: /usr/bin/evemu-event /dev/input/by-path/platform-thinkpad_acpi-event --type 5 --code 1 --value 0 --sync
+USERNAME ALL= NOPASSWD: /usr/bin/evemu-event /dev/input/by-path/platform-thinkpad_acpi-event --type 5 --code 1 --value 1 --sync
+USERNAME ALL= NOPASSWD: /usr/bin/evtest --grab /dev/input/by-path/platform-i8042-serio-0-event-kbd
