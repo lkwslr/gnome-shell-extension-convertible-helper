@@ -1,6 +1,6 @@
 <!-- 
--    org.gnome.shell.extensions.screen-rotate.gschema.xml
-- Copyright (C) 2024 shyzus, Shinigaminai
+-    org.gnome.shell.extensions.convertible-helper.gschema.xml
+- Copyright (C) 2024 shyzus, Shinigaminai, lkwslr
 -
 - This program is free software: you can redistribute it and/or modify
 - it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
 -->
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="org.gnome.shell.extensions.screen-rotate"
-    path="/org/gnome/shell/extensions/screen-rotate/">
+  <schema id="org.gnome.shell.extensions.convertible-helper"
+    path="/org/gnome/shell/extensions/convertible-helper/">
 
     <key type="b" name="invert-horizontal-rotation-direction">
       <default>false</default>

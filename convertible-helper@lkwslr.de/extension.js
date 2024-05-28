@@ -1,5 +1,5 @@
 /* extension.js
-* Copyright (C) 2024  kosmospredanie, shyzus, Shinigaminai
+* Copyright (C) 2024  kosmospredanie, shyzus, Shinigaminai, lkwslr
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -431,6 +431,14 @@ export default class ScreenAutoRotateExtension extends Extension {
         this._add_manual_flip();
       } else {
         this._remove_manual_flip();
+      }
+    });
+
+    this._settings.connect('changed::sw-tablet-mode', (settings, key) => {
+      if (settings.get_boolean(key)) {
+        this._add_manual_mode();
+      } else {
+        this._remove_manual_mode();
       }
     });
 
