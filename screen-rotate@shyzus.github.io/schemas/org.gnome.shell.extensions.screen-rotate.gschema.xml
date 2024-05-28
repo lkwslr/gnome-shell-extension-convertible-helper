@@ -65,6 +65,10 @@
       <default>false</default>
       <description>Invert horizontal rotation direction of the screen</description>
     </key>
+    <key type="b" name="tablet-mode">
+      <default>false</default>
+      <description>Hide the 'Tablet Mode' quick toggle.</description>
+    </key>
     <key type="b" name="debug-logging">
       <default>false</default>
       <description>Toggle debug logging.</description>

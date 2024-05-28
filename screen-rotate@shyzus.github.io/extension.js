@@ -52,8 +52,6 @@ const Orientation = Object.freeze({
   'right-up': 3
 });
 
-let SW_TABLET_MODE = false;
-
 const ManualOrientationIndicator = GObject.registerClass(
 class ManualOrientationIndicator extends SystemIndicator {
     _init(ext_ref) {
@@ -147,6 +145,66 @@ class ManualOrientationMenuToggle extends QuickMenuToggle {
       item.setOrnament(PopupMenu.Ornament.CHECK);
     }
 });
+
+
+const ManualTabletModeIndicator = GObject.registerClass(
+    class ManualTabletModeIndicator extends SystemIndicator {
+      _init(ext_ref, settings) {
+        super._init();
+        this.toggle = new ManualTabletMenuToggle(ext_ref, settings);
+        this.quickSettingsItems.push(this.toggle);
+      }
+
+      destroy() {
+        this.quickSettingsItems.pop(this.toggle);
+        this.toggle.destroy();
+      }
+    });
+
+const ManualTabletMenuToggle = GObject.registerClass(
+    class ManualTabletMenuToggle extends QuickMenuToggle {
+      _init(ext, settings) {
+        super._init({
+          title: _('Tablet Mode'),
+          iconName: 'input-tablet-symbolic',
+          menuEnabled: false,
+          toggleMode: true,
+        });
+
+        this.connect('clicked', () => {
+          if (this.checked === true) {
+            settings.set_boolean('tablet-mode', true)
+          } else {
+            settings.set_boolean('tablet-mode', false)
+          }
+        });
+
+        settings.connect('changed::tablet-mode', (settings, key) => {
+          if (settings.get_boolean('sw-tablet-mode')) {
+            if (settings.get_boolean('debug-logging')) {
+              console.log(`Setting tablet Mode to ${settings.get_boolean('tablet-mode')}`);
+            }
+            try {
+              if (settings.get_boolean('tablet-mode')) {
+                const proc = Gio.Subprocess.new(
+                    ['bash', '-c', tablet_mode],
+                    Gio.SubprocessFlags.STDOUT_SILENCE
+                );
+                this.checked = true;
+              } else {
+                const proc = Gio.Subprocess.new(
+                    ['bash', '-c', laptop_mode],
+                    Gio.SubprocessFlags.STDOUT_SILENCE
+                );
+                this.checked = false;
+              }
+            } catch (e) {
+              logError(e);
+            }
+          }
+        });
+      }
+    });
 
 class SensorProxy {
   constructor(rotate_cb) {
@@ -303,32 +361,16 @@ class ScreenAutorotate {
     if (this._settings.get_boolean('sw-tablet-mode')) {
       switch (target) {
         case 0:
-          try {
-            const proc = Gio.Subprocess.new(
-                ['bash', '-c', laptop_mode],
-                Gio.SubprocessFlags.NONE
-            );
-            SW_TABLET_MODE = false;
-          } catch (e) {
-            logError(e);
-          }
+          this._settings.set_boolean('tablet-mode', false)
           break;
         case 1:
         case 2:
         case 3:
-          try {
-            if (!SW_TABLET_MODE) {
-              const proc = Gio.Subprocess.new(
-                  ['bash', '-c', tablet_mode],
-                  Gio.SubprocessFlags.NONE
-              );
-              SW_TABLET_MODE = true;
-            }
-          } catch (e) {
-            logError(e);
-          }
+          this._settings.set_boolean('tablet-mode', true)
           break;
       }
+    } else {
+      this._settings.set_boolean('tablet-mode', false)
     }
   }
 
@@ -368,7 +410,7 @@ class ScreenAutorotate {
 
     target = (target + offset) % 4;
     if (this._settings.get_boolean('debug-logging')) {
-      console.log(`SW=${SW_TABLET_MODE}`);
+      console.log(`SW_TABLET_MODE=${SW_TABLET_MODE}`);
       console.log(`sensor=${Orientation[orientation]}`);
       console.log(`offset=${offset}`);
       console.log(`target=${target}`);
@@ -396,6 +438,12 @@ export default class ScreenAutoRotateExtension extends Extension {
       this._set_hide_lock_rotate(settings.get_boolean(key));
     });
 
+    if (this._settings.get_boolean('sw-tablet-mode')) {
+      this._add_manual_mode();
+    } else {
+      this._remove_manual_mode();
+    }
+
     if (this._settings.get_boolean('manual-flip')) {
       this._add_manual_flip();
     } else {
@@ -422,6 +470,18 @@ export default class ScreenAutoRotateExtension extends Extension {
         autoRotateIndicator.quickSettingsItems,
         Main.panel.statusArea.quickSettings._rfkill.quickSettingsItems[0]
       );
+    }
+  }
+
+  _add_manual_mode() {
+    this.modeIndicator = new ManualTabletModeIndicator(this._ext, this._settings);
+    Main.panel.statusArea.quickSettings.addExternalIndicator(this.modeIndicator);
+  }
+
+  _remove_manual_mode() {
+    if (this.modeIndicator != null) {
+      this.modeIndicator.destroy();
+      this.modeIndicator = null;
     }
   }
 
