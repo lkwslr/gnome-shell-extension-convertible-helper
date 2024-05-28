@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/gnome-shell-extension-screen-autorotate.iml" filepath="$PROJECT_DIR$/.idea/gnome-shell-extension-screen-autorotate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/gnome-shell-extension-convertible-helper.iml" filepath="$PROJECT_DIR$/.idea/gnome-shell-extension-convertible-helper.iml" />
     </modules>
   </component>
 </project>
